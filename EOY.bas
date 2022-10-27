@@ -122,11 +122,12 @@ SWAP YEARS(COUNT%), YEARS(COUNTER%)
 SWAP USAGE(COUNT%), USAGE(COUNTER%)
 SWAP SEWAGE(COUNT%), SEWAGE(COUNTER%)
 SWAP RUBBISH(COUNT%), RUBBISH(COUNTER%)
-SWAP DISCOUNT.CHG(COUNT%), DISCOUNT.CHG(COUNTER%)
+SWAP DISC.CHG(COUNT%), DISC.CHG(COUNTER%)
 SWAP TOTAL.CHG(COUNT%), TOTAL.CHG(COUNTER%)
 RETURN
 
 SOFT.PRINT:
+
 PRINT TAB(26); "Paradise City Water Department"
 PRINT TAB(25); "Quarterly Customer Billing Report"
 PRINT TAB(25); "---------------------------------"
@@ -134,6 +135,22 @@ PRINT
 PRINT TAB(3); "Customer"; TAB(15); "Account"; TAB(28); "Water"; TAB(38); "Sewage"; TAB(49); "Rubbish"; TAB(60); "Discount"; TAB(73); "Total"
 PRINT TAB(5); "Name"; TAB(17); "Age"; TAB(28); "Usage"; TAB(38); "Service"; TAB(49); "Service"; TAB(61); "Amount"; TAB(74); "Due"
 PRINT TAB(3); "--------"; TAB(15); "-------"; TAB(28); "-----"; TAB(38); "-------"; TAB(49); "-------"; TAB(60); "--------"; TAB(73); "-----"
+FOR COLUMN% = 1 TO UBOUND(F.NAME)
+    PRINT TAB(3); F.NAME(COLUMN%);
+    IF FLAG(COLUMN%) > 0 THEN
+        PRINT "RECORD CONTAINS INVALID DATA!"
+    ELSE
+        PRINT USING "## #####,.##L & & $$#####,.## $$#####,.##"; TAB(15); YEARS(COLUMN%); TAB(28); USAGE(COLUMN%); TAB(38); SEWAGE(COLUMN%); TAB(49); RUBBISH(COLUMN%); TAB(60); DISC.CHG(COLUMN%); TAB(73); TOTAL.CHG(COLUMN%)
+
+    END IF
+NEXT COLUMN%
+PRINT STRING$(80, 45)
+PRINT TAB(3); "Total Accumulated Charges = ";
+PRINT USING "$$#####,.##"; ACC.PAY
+
+PRINT TAB(3); "Customer With Highest Consumption:"
+PRINT USING "& #####,.##L"; TAB(3); F.NAME(1); TAB(15); USAGE(COLUMN%)
+
 
 
 RETURN
@@ -147,17 +164,19 @@ LPRINT TAB(3); "Customer"; TAB(15); "Account"; TAB(28); "Water"; TAB(38); "Sewag
 LPRINT TAB(5); "Name"; TAB(17); "Age"; TAB(28); "Usage"; TAB(38); "Service"; TAB(49); "Service"; TAB(61); "Amount"; TAB(74); "Due"
 LPRINT TAB(3); "--------"; TAB(15); "-------"; TAB(28); "-----"; TAB(38); "-------"; TAB(49); "-------"; TAB(60); "--------"; TAB(73); "-----"
 FOR COLUMN% = 1 TO UBOUND(F.NAME)
-    LPRINT F.NAME(COLUMN%);
+    LPRINT TAB(3); F.NAME(COLUMN%);
     IF FLAG(COLUMN%) > 0 THEN
         LPRINT "RECORD CONTAINS INVALID DATA!"
-    ELSEIF FLAG(COLUMN%) = 0 THEN
-        LPRINT USING "& ### #####.##L & & $$####.## $$#####.##"; TAB(3); F.NAME(COLUMN%); TAB(15); YEARS(COLUMN%) TAB(28); USAGE(COLUMN%); TAB(38); SEWAGE(COLUMN%); TAB(49); RUBBISH(COLUMN%); TAB(60); DISCOUNT.CHG(COLUMN%); TAB(73); TOTAL.CHG(COLUMN%)
-
+    ELSE
+        LPRINT USING "## #####,.##L & & $$#####,.## $$#####,.##"; TAB(15); YEARS(COLUMN%); TAB(28); USAGE(COLUMN%); TAB(38); SEWAGE(COLUMN%); TAB(49); RUBBISH(COLUMN%); TAB(60); DISC.CHG(COLUMN%); TAB(73); TOTAL.CHG(COLUMN%)
 
     END IF
 NEXT COLUMN%
+LPRINT STRING$(80, 45)
+LPRINT TAB(3); "Total Accumulated Charges = ";
+LPRINT USING "$$#####,.##"; ACC.PAY
 
+LPRINT TAB(3); "Customer With Highest Consumption:"
+LPRINT USING "& #####,.##L"; TAB(3); F.NAME(1); TAB(15); USAGE(COLUMN%)
 
 RETURN
-
-
