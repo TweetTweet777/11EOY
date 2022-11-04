@@ -1,9 +1,53 @@
+'FILENAME: EOY.bas
+'PROGRAMMER: Ly, Max
+'DATE: 27/06/2022
+'VERSION: Final
+
+'PURPOSE:
+'The Purpose of this program is to compute and print a quarterly (3 monthly) customer billing report for water, sewage, and sanitation for the city of Paradise. 
+'The user will also be prompted if they want a hard copy or a soft copy.
+
+'INPUT:
+'The program will dimension variables based on: Whether or not they have used sewage or rubbish collection,
+'how many years they have been with the company and how much water they have consumed,
+'their name, discount charge, total charge, and error flags/data validation.
+'The program will read the Full name, Amount of years they have been with this company, 
+'amount of liters their household has used over a quarter, 
+'whether or not city sewage is used and whether or not city rubbish collection is provided.
+
+'PROCESSING:
+'Constants of the loyalty discount, the cost of water per liter dependent on water consumption (0L - 4000L, 4001L - 10000L, > 10000L), 
+'cost per quarter for sewage, and the cost per quarter for rubbish collection are stored.
+'The program will check for any invalid data, and if there is any, 
+'it will skip the processing and will not add anything to the accumulated cost for all customers, saving the resource cost of the program. 
+'The program will calculate the cost of water per liter based on the amount of water that a household consumes.
+'Then, It will calculate the total cost by calculating the cost of water consumption and adding on sewage and/or rubbish collection cost if applicable.
+'It will then calculate a discount based on the discount amount and the gross charge if the customer has been with the company for 10 or more years. 
+'It will then add the net charge of the customer to an accumulated charge for all customers. 
+'After that, the program will sort the customers and their data applicable into descending order based on the customers' water usage (liters). 
+'It will then search for the customer with the highest water consumption and store it in a separate variable to the main array. 
+
+
+'OUTPUT:
+'The output for the program will include a main report title, a subtitle, 
+'and column headings for each item (customer name, years that they have been with the company,
+'liters of water used, whether or not sewage service is used, whether or not rubbish service is used, 
+'discount amount for loyal customers and the total amount due per customer per quarter). 
+'Column headings will need to be printed on 2 rows and must be fully descriptive. 
+'The accumulated total for all charges for all the customers for the quarter is to be printed once only at the bottom of the report. 
+'The customer name and the liters used for the customer who used the most liters of water during the quarter is to be printed below the accumulated total.
+'It will either print this in a hard copy or a soft copy based on what the user has entered prior.
+
+
+'------------------------------------------------------------------
+
 'CLEARS SCREEN
 CLS
 
 'SET ALL ARRAYS TO START AT 1 INSTEAD OF 0
 OPTION BASE 1
 
+'CHANGES ARRAY SIZE OF ALL NON-CONSTANT ARRAYS
 ARRAY.SIZE% = 10
 
 'DIMENTION VARIABLES AND ARRAYS
@@ -85,10 +129,15 @@ RETURN
 'SUBROUTINE FOR THE MAIN LOGIC AND PROCESSING OF DATA
 PROCESSING:
     ACC.CHG% = 0
+    
+    'LOOP FOR GOING THROUGH EACH COLUMN OF DATA
     FOR COLUMN% = 1 TO UBOUND(F.NAME)
         TOTAL.CHG(COLUMN%) = 0
-
+        
+        'IF THE USER HAS ANY INVALID DATA IT WILL SKIP PROCESSING
         IF FLAG(COLUMN%) = 0 THEN
+        
+        'CHECKS HOW MUCH WATER IS USED AND THEN ASSIGNS A VARIBLE FOR CALCULATION LATER
             SELECT CASE USAGE(COLUMN%)
                 CASE 0 TO 4000
                     PERL% = 1
@@ -101,9 +150,11 @@ PROCESSING:
                     PERL% = 4
 
             END SELECT
-
+            
+            'CALCULATION OF WATER COST
             TOTAL.CHG(COLUMN%) = USAGE(COLUMN%) * WATER.CHG(PERL%)
-
+            
+            'CALCULATION FOR SEWAGE AND RUBBISH USAGE
             IF SEWAGE(COLUMN%) + RUBBISH(COLUMN%) = 2 THEN
                 TOTAL.CHG(COLUMN%) = TOTAL.CHG(COLUMN%) + SEWAGE.CHG% + RUBBISH.CHG%
 
@@ -114,13 +165,14 @@ PROCESSING:
                 TOTAL.CHG(COLUMN%) = TOTAL.CHG(COLUMN%) + RUBBISH.CHG%
 
             END IF
-
+            
+            ' CALCULATION FOR DISCOUNT CHARGE
             IF YEARS(COLUMN%) >= 10 THEN
                 DISC.CHG(COLUMN%) = TOTAL.CHG(COLUMN%) * DISC!
                 TOTAL.CHG(COLUMN%) = TOTAL.CHG(COLUMN%) - DISC.CHG(COLUMN%)
             END IF
 
-
+            'CALCULATION FOR ACCUMULATED CHARGE
            ACC.CHG! = ACC.CHG! + TOTAL.CHG(COLUMN%)
            ELSE
            USAGE(COLUMN%) = COLUMN% * -1
